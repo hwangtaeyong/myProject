@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMapConfig      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+
+  <settings
+    cacheModelsEnabled="false"
+    useStatementNamespaces="true"/>
+
+   <transactionManager type="JDBC" commitRequired="false">
+      <dataSource type="SIMPLE">
+         <property name="JDBC.Driver" value="oracle.jdbc.driver.OracleDriver"/>
+         <property name="JDBC.ConnectionURL" 
+         value="jdbc:oracle:thin:@192.168.16.0:1521:TestDB"/>
+         <property name="JDBC.Username" value="suzi"/>
+         <property name="JDBC.Password" value="a123"/>
+      </dataSource>
+  </transactionManager>
+ 
+  <sqlMap resource="com/util/sqlMap/board_sqlMap.xml"/> 
+
+ 
+</sqlMapConfig>

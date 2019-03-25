@@ -1,0 +1,36 @@
+<?xml  version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+ "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+<package name="board" extends="struts-default" namespace="/bbs" >
+
+	<action name="created" method="created" class="com.board.BoardAction">
+		<result name="input">/board/created.jsp</result>
+		<result name="success" type="redirectAction">list</result>
+	</action>
+        
+    <action name="list" method="list" class="com.board.BoardAction">
+    	<result name="success">/board/list.jsp</result>
+    </action>
+    
+    <action name="article" method="article" class="com.board.BoardAction">
+    	<result name="success">/board/article.jsp</result>
+    </action>
+
+	<action name="updated" method="updated" class="com.board.BoardAction">
+		<result name="input">/board/created.jsp</result>
+		<result name="success" type="redirectAction">list?pageNum=${dto.pageNum}</result>
+	</action>
+	
+	<action name="reply" method="reply" class="com.board.BoardAction">
+		<result name="input">/board/created.jsp</result>
+		<result name="success" type="redirectAction">list?pageNum=${dto.pageNum}</result>
+	</action>
+	
+	<action name="deleted" method="deleted" class="com.board.BoardAction">		
+		<result name="success" type="redirectAction">list?pageNum=${dto.pageNum}</result>
+	</action>
+
+
+</package>
+</struts>

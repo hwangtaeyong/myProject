@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="board">
+
+<!-- 별칭 사용 -->
+<typeAlias alias="boardDTO" type="com.board.BoardDTO"/>
+
+<!-- 최대값 -->
+<select id="maxBoardNum" resultClass="int">
+	select nvl(max(boardNum),0) from bbs
+</select>
+
+<!-- 데이터 입력 -->
+<insert id="insertData" parameterClass="boardDTO">
+	insert into bbs	(boardNum,name,pwd,email,subject,content,ipAddr,groupNum,
+	depth,orderNo,parent,hitCount,created) values 
+	(#boardNum#,#name#,#pwd#,#email#,#subject#,#content#,#ipAddr#,#groupNum#,
+	#depth#,#orderNo#,#parent#,0,sysdate)
+</insert>
+
+<!-- 데이터 갯수 -->
+<select id="dataCount" resultClass="int" parameterClass="map">
+	select nvl(count(*),0) from bbs
+	where $searchKey$ like '%' || #searchValue# || '%'
+</select>
+
+<!-- 전체데이터 -->
+<select id="listData" resultClass="boardDTO" parameterClass="map">
+	select * from (
+	select rownum rnum, data.* from (
+	select boardNum,name,subject,depth,hitCount,
+	to_char(created,'YYYY-MM-DD') created from bbs
+	where $searchKey$ like '%' || #searchValue# || '%'
+	order by groupNum desc, orderNo asc) data)
+<![CDATA[
+	where rnum>=#start# and rnum<=#end#
+]]>
+</select>
+
+<!-- 조회수 증가 -->
+<update id="updateHitCount" parameterClass="int">
+	update bbs set hitCount = hitCount+1 where boardNum = #boardNum#
+</update>
+
+<!-- 한개의 게시물 가져오기 -->
+<select id="readData" parameterClass="int" resultClass="boardDTO">
+	select boardNum,name,pwd,email,subject,content,ipAddr,groupNum,
+	depth,orderNo,parent,hitCount,created from bbs
+	where boardNum=#boardNum#
+</select>
+
+<!-- 이전글 -->
+<select id="preReadData" parameterClass="map" resultClass="boardDTO">
+<![CDATA[
+	select data.* from (
+	select boardNum,subject from bbs
+	where ($searchKey$ like '%' || #searchValue# || '%') and
+	((groupNum=#groupNum# and orderNo<#orderNo#) or (groupNum>#groupNum#))
+	order by groupNum asc, orderNo desc) data
+	where rownum=1
+]]>
+</select>
+
+<!-- 다음글 -->
+<select id="nextReadData" parameterClass="map" resultClass="boardDTO">
+<![CDATA[
+	select data.* from (
+	select boardNum,subject from bbs
+	where ($searchKey$ like '%' || #searchValue# || '%') and
+	((groupNum=#groupNum# and orderNo>#orderNo#) or (groupNum<#groupNum#))
+	order by groupNum desc, orderNo asc) data
+	where rownum=1
+]]>
+</select>
+
+<!-- 답변일경우 orderNo를 변경 -->
+<update id="orderNoUpdate" parameterClass="map">
+	update bbs set orderNo = orderNo + 1
+	where groupNum=#groupNum# and orderNo>#orderNo#
+</update>
+
+<update id="updateData" parameterClass="boardDTO">
+	update bbs set name=#name#,subject=#subject#,email=#email#,
+	content=#content#,pwd=#pwd# where boardNum=#boardNum#
+</update>
+
+<delete id="deleteData" parameterClass="int">
+	delete bbs 
+	where boardNum in
+	(select boardNum from bbs start with boardNum=#boardNum#
+	connect by prior boardNum=parent)
+</delete>
+
+</sqlMap>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
